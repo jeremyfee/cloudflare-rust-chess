@@ -1,0 +1,261 @@
+openapi: 3.0.0
+info:
+  title: Chess API
+  description: api for chess game
+  version: 0.0.1
+paths:
+  /challenges/items:
+    get:
+      operationId: getChallenges
+      responses:
+        "200":
+          description: List of challenges
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChallengeCollection"
+    post:
+      operationId: createChallenge
+      responses:
+        "200":
+          description: Created challenge
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Challenge"
+      requestBody:
+        description: challenge parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestCreateChallenge"
+
+  /challenges/items/{id}:
+    get:
+      operationId: getChallenge
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Challenge ID
+      responses:
+        "200":
+          description: Get challenge
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChallengeCollection"
+    patch:
+      operationId: acceptChallenge
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Challenge ID
+      responses:
+        "200":
+          description: Created game
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChessGame"
+
+  /games/items:
+    get:
+      operationId: getGames
+      responses:
+        "200":
+          description: List of chess games
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GameCollection"
+
+  /games/items/{id}:
+    get:
+      operationId: getGame
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Game ID
+      responses:
+        "200":
+          description: Game
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChessGame"
+    patch:
+      operationId: makeMove
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Game ID
+      responses:
+        "200":
+          description: Updated game
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GameMove"
+
+components:
+  schemas:
+    ChallengeCollection:
+      type: object
+      required:
+        - challenges
+      properties:
+        challenges:
+          type: array
+          items:
+            $ref: "#/components/schemas/Challenge"
+
+    Challenge:
+      type: object
+      required:
+        - id
+        - createdAt
+        - createdBy
+        - opponent
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        opponent:
+          type: string
+          nullable: true
+        playAs:
+          $ref: "#/components/schemas/PieceColor"
+          nullable: true
+        gameId:
+          type: integer
+          format: int32
+          nullable: true
+
+    ChessGame:
+      type: object
+      required:
+        - id
+        - fen
+        - moves
+        - player1
+        - player2
+      properties:
+        id:
+          type: string
+        fen:
+          type: string
+        moves:
+          type: array
+          items:
+            $ref: "#/components/schemas/GameMove"
+        player1:
+          type: string
+        player2:
+          type: string
+        status:
+          $ref: "#/components/schemas/GameStatus"
+          nullable: true
+        turn:
+          $ref: "#/components/schemas/PieceColor"
+          nullable: true
+
+    GameCollection:
+      type: object
+      required:
+        - games
+      properties:
+        games:
+          type: array
+          items:
+            $ref: "#/components/schemas/GameMetadata"
+
+    GameMetadata:
+      type: object
+      required:
+        - id
+        - fen
+        - player1
+        - player2
+      properties:
+        id:
+          type: string
+        fen:
+          type: string
+        player1:
+          type: string
+        player2:
+          type: string
+        status:
+          $ref: "#/components/schemas/GameStatus"
+          nullable: true
+        turn:
+          $ref: "#/components/schemas/PieceColor"
+          nullable: true
+
+    GameMove:
+      type: object
+      required:
+        - action
+        - move
+      properties:
+        action:
+          type: string
+          enum:
+            - ACCEPT_DRAW
+            - MOVE
+            - OFFER_DRAW
+            - RESIGN
+        move:
+          type: string
+          nullable: true
+
+    GameStatus:
+      type: string
+      enum:
+        - BLACK_RESIGN
+        - BLACK_WIN
+        - DRAW
+        - STALEMATE
+        - WHITE_RESIGN
+        - WHITE_WIN
+
+    PieceColor:
+      type: string
+      enum:
+        - WHITE
+        - BLACK
+
+    RequestAcceptChallenge:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+
+    RequestCreateChallenge:
+      type: object
+      properties:
+        opponent:
+          type: string
+          nullable: true
+        playAs:
+          $ref: "#/components/schemas/PieceColor"
+          nullable: true
