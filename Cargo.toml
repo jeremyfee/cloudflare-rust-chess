@@ -1,8 +1,10 @@
 [package]
 name = "cloudflare-rust-chess"
-version = "0.1.0"
+description = "chess api for cloudflare workers"
 edition = "2021"
-build = "build.rs"
+license = "CC0-1.0"
+repository = "https://github.com/jeremyfee/cloudflare-rust-chess"
+version = "0.1.0"
 
 # https://github.com/rustwasm/wasm-pack/issues/1247
 [package.metadata.wasm-pack.profile.release]
@@ -15,6 +17,12 @@ crate-type = ["cdylib"]
 worker = { version = "0.0.18", features = ["d1"] }
 chess-engine = { git = "https://github.com/jeremyfee/chess-engine", branch = "game" }
 chess_openapi = { path = "./generated/rust_chess_api" }
+getrandom = { version = "0.2", features = ["js"] }
+chrono = "0.4.31"
+thiserror = "1.0.50"
+serde = "1.0.192"
+serde_json = "1.0.108"
+async-trait = "0.1.74"
 
 [profile.release]
 lto = true
